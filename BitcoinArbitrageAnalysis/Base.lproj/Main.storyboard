@@ -120,6 +120,20 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
+                            <view contentMode="scaleToFill" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="CyU-qO-2ON" customClass="LineChartView" customModule="Charts">
+                                <rect key="frame" x="16" y="311" width="343" height="343"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="sXo-GC-L2U">
+                                <rect key="frame" x="163" y="256" width="49" height="36"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="20"/>
+                                <state key="normal" title="Fetch"/>
+                                <connections>
+                                    <action selector="didTapFetchButton:" destination="8rJ-Kc-sve" eventType="touchUpInside" id="9Ft-Qw-gAs"/>
+                                </connections>
+                            </button>
                         </subviews>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <viewLayoutGuide key="safeArea" id="O1u-W8-tvY"/>
@@ -128,6 +142,7 @@
                     <connections>
                         <outlet property="exchange1TextField" destination="qi1-qg-Dny" id="wti-QW-WSV"/>
                         <outlet property="exchange2TextField" destination="W4k-zK-83t" id="r5O-Rd-KGc"/>
+                        <outlet property="historicalLineChart" destination="CyU-qO-2ON" id="aRZ-0G-GWY"/>
                         <outlet property="indexSwitch" destination="cVi-Ao-Frc" id="JOC-D1-Sdr"/>
                         <outlet property="intervalTextField" destination="dP9-Ul-yOJ" id="QNu-Tv-351"/>
                     </connections>

@@ -7,6 +7,7 @@
 //
 
 import UIKit
+import Charts
 
 class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
     
@@ -19,8 +20,11 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
     @IBOutlet weak var exchange1TextField: UITextField!
     @IBOutlet weak var exchange2TextField: UITextField!
     @IBOutlet weak var intervalTextField: UITextField!
-    
     @IBOutlet weak var indexSwitch: UISwitch!
+    
+    @IBOutlet weak var historicalLineChart: LineChartView!
+    
+    var yVals = [1]
     
     var exchange1 = "", exchange2 = "", interval = ""
     var withIndex = false
@@ -91,14 +95,40 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
             case PickerViewTag.Exchange1:
                 exchange1TextField.text = exchanges[row]
                 exchange1 = exchanges[row]
+                print("Exchange 1 is now \(exchange1)")
             case PickerViewTag.Exchange2:
                 exchange2TextField.text = exchanges[row]
                 exchange2 = exchanges[row]
+                print("Exchange 2 is now \(exchange2)")
             case PickerViewTag.Interval:
                 intervalTextField.text = intervals[row]
                 interval = intervals[row]
+                print("Interval is now \(interval)")
             }
         }
+    }
+    
+    @IBAction func didTapFetchButton(_ sender: UIButton) {
+        // User wants to see the historical data!
+        
+        var historicalData = [ChartDataEntry]()
+        
+        yVals.append(yVals[yVals.count - 1] * 2)
+        
+        for i in 0..<yVals.count {
+            let val = ChartDataEntry(x: Double(i), y: Double(yVals[i]))
+            historicalData.append(val)
+        }
+        
+        let historicalDataSet = LineChartDataSet(values: historicalData, label: "Kraken")
+        historicalDataSet.colors = [NSUIColor.blue]
+        
+        let lineChartData = LineChartData()
+        lineChartData.addDataSet(historicalDataSet)
+        
+        historicalLineChart.data = lineChartData
+        historicalLineChart.chartDescription?.text = "Exchange comparison"
+        
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
