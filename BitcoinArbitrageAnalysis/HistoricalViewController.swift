@@ -128,7 +128,12 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
         
         historicalLineChart.data = lineChartData
         historicalLineChart.chartDescription?.text = "Exchange comparison"
-        
+    }
+
+    // Clear the line chart data
+    @IBAction func didTapClearButton(_ sender: UIButton) {
+        historicalLineChart.clear()
+        yVals = [1]
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
