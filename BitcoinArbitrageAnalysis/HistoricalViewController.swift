@@ -9,8 +9,8 @@
 import UIKit
 import Charts
 
-class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource {
-    
+class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, ChartViewDelegate, DataServiceDelegate {
+
     enum PickerViewTag: Int {
         case Exchange1
         case Exchange2
@@ -23,14 +23,24 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
     @IBOutlet weak var indexSwitch: UISwitch!
     
     @IBOutlet weak var historicalLineChart: LineChartView!
+    @IBOutlet weak var selectedValueLabel: UILabel!
     
-    var yVals = [1]
+    let historicalDataService = HistoricalDataService()
     
-    var exchange1 = "", exchange2 = "", interval = ""
+    var exchange1 = GDAX
+    var exchange2 = BITFINEX
+    var interval = "YEAR"
     var withIndex = false
     
-    let exchanges = ["Bitfinex", "GDAX", "Kraken", "Gemini"]
-    let intervals = ["Two Years", "One Year", "Six Months", "Three Months", "One Month", "One Week", "One Day", "12 Hour", "Six Hour", "One Hour", "30 Minute"]
+    let exchanges = [GDAX, BITFINEX, KRAKEN, GEMINI]
+    
+    let intervals:[(interval: String, displayInterval: String)] = [("TWOYEAR", "Two Years"),
+                                                                   ("YEAR", "One Year"),
+                                                                   ("SIXMONTH", "Six Months"),
+                                                                   ("THREEMONTH", "Three Months"),
+                                                                   ("MONTH", "One Month"),
+                                                                   ("WEEK", "One Week"),
+                                                                   ("DAY", "One Day")]
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -54,11 +64,64 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
         exchange1TextField.inputView = exchange1PickerView
         exchange2TextField.inputView = exchange2PickerView
         intervalTextField.inputView = intervalPickerView
+        
+        historicalLineChart.delegate = self
+        historicalDataService.delegate = self
+        initChart()
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
+    }
+    
+    func initChart() {
+        historicalLineChart.xAxis.valueFormatter = XAxisFormatter()
+        historicalLineChart.xAxis.setLabelCount(2, force: false)
+        historicalLineChart.xAxis.avoidFirstLastClippingEnabled = true
+        historicalLineChart.xAxis.labelPosition = XAxis.LabelPosition.bottom
+        
+//        historicalLineChart.data = LineChartData()
+        historicalLineChart.data?.setDrawValues(false)
+    }
+    
+    func didReceiveDataPoints(_ datapoints: [DataPoint], _ exchange: Exchange) {
+        DispatchQueue.main.async {
+            self.addNewDataPointsToChart(Datapoints: datapoints, Exchange: exchange)
+        }
+    }
+    
+    func addNewDataPointsToChart(Datapoints datapoints: [DataPoint], Exchange exchange: Exchange) {
+        // Data points are returned descending from the server
+        let dataPointsAscending = datapoints.reversed()
+        
+        print("Found \(dataPointsAscending.count) buckets from \(exchange.displayName)")
+        
+        // Map server response to array of DataPoints
+        let historicalDataPoints = dataPointsAscending.map { (datapoint) -> ChartDataEntry in
+            return ChartDataEntry(x: Double(datapoint.timestamp), y: Double(datapoint.price!)!)
+        }
+        
+        let historicalDataSet = LineChartDataSet(values: historicalDataPoints, label: exchange.displayName)
+        historicalDataSet.colors = [exchange.color]
+        historicalDataSet.drawCirclesEnabled = false
+        
+        var historicalData: LineChartData
+        if (historicalLineChart.data != nil) {
+            historicalData = historicalLineChart.data! as! LineChartData
+        } else {
+            historicalData = LineChartData()
+        }
+        historicalData.addDataSet(historicalDataSet)
+        
+        historicalLineChart.data = historicalData
+        historicalLineChart.notifyDataSetChanged()
+        
+        historicalLineChart.chartDescription?.text = ""
+    }
+    
+    func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
+        selectedValueLabel.text = String(format: "%f", entry.y)
     }
 
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
@@ -79,11 +142,11 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
         if let tag = PickerViewTag(rawValue: pickerView.tag) {
             switch tag {
             case PickerViewTag.Exchange1:
-                return exchanges[row]
+                return exchanges[row].displayName
             case PickerViewTag.Exchange2:
-                return exchanges[row]
+                return exchanges[row].displayName
             case PickerViewTag.Interval:
-                return intervals[row]
+                return intervals[row].displayInterval
             }
         }
         return ""
@@ -93,47 +156,30 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
         if let tag = PickerViewTag(rawValue: pickerView.tag) {
             switch tag {
             case PickerViewTag.Exchange1:
-                exchange1TextField.text = exchanges[row]
+                exchange1TextField.text = exchanges[row].displayName
                 exchange1 = exchanges[row]
                 print("Exchange 1 is now \(exchange1)")
             case PickerViewTag.Exchange2:
-                exchange2TextField.text = exchanges[row]
+                exchange2TextField.text = exchanges[row].displayName
                 exchange2 = exchanges[row]
                 print("Exchange 2 is now \(exchange2)")
             case PickerViewTag.Interval:
-                intervalTextField.text = intervals[row]
-                interval = intervals[row]
+                intervalTextField.text = intervals[row].displayInterval
+                interval = intervals[row].interval
                 print("Interval is now \(interval)")
             }
         }
     }
     
     @IBAction func didTapFetchButton(_ sender: UIButton) {
-        // User wants to see the historical data!
-        
-        var historicalData = [ChartDataEntry]()
-        
-        yVals.append(yVals[yVals.count - 1] * 2)
-        
-        for i in 0..<yVals.count {
-            let val = ChartDataEntry(x: Double(i), y: Double(yVals[i]))
-            historicalData.append(val)
-        }
-        
-        let historicalDataSet = LineChartDataSet(values: historicalData, label: "Kraken")
-        historicalDataSet.colors = [NSUIColor.blue]
-        
-        let lineChartData = LineChartData()
-        lineChartData.addDataSet(historicalDataSet)
-        
-        historicalLineChart.data = lineChartData
-        historicalLineChart.chartDescription?.text = "Exchange comparison"
+        historicalLineChart.clear()
+        historicalDataService.loadHistoricalData(Exchange: exchange1, Interval: interval)
+        historicalDataService.loadHistoricalData(Exchange: exchange2, Interval: interval)
     }
 
     // Clear the line chart data
     @IBAction func didTapClearButton(_ sender: UIButton) {
         historicalLineChart.clear()
-        yVals = [1]
     }
     
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {

@@ -7,6 +7,9 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1C0BE02D202CBFE2000FE65C /* XAxisFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0BE02C202CBFE2000FE65C /* XAxisFormatter.swift */; };
+		1C0BE031202D102D000FE65C /* HistoricalDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0BE030202D102D000FE65C /* HistoricalDataService.swift */; };
+		1C0BE033202D40AF000FE65C /* Exchanges.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C0BE032202D40AF000FE65C /* Exchanges.swift */; };
 		1C1C645D201E409F005B7E51 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1C645C201E409F005B7E51 /* AppDelegate.swift */; };
 		1C1C645F201E409F005B7E51 /* RealTimeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C1C645E201E409F005B7E51 /* RealTimeViewController.swift */; };
 		1C1C6464201E409F005B7E51 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C1C6462201E409F005B7E51 /* Main.storyboard */; };
@@ -18,6 +21,9 @@
 
 /* Begin PBXFileReference section */
 		09C8EE20AB569C1D21346D87 /* Pods_BitcoinArbitrageAnalysis.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_BitcoinArbitrageAnalysis.framework; sourceTree = BUILT_PRODUCTS_DIR; };
+		1C0BE02C202CBFE2000FE65C /* XAxisFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = XAxisFormatter.swift; sourceTree = "<group>"; };
+		1C0BE030202D102D000FE65C /* HistoricalDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoricalDataService.swift; sourceTree = "<group>"; };
+		1C0BE032202D40AF000FE65C /* Exchanges.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Exchanges.swift; sourceTree = "<group>"; };
 		1C1C6459201E409F005B7E51 /* BitcoinArbitrageAnalysis.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BitcoinArbitrageAnalysis.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		1C1C645C201E409F005B7E51 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		1C1C645E201E409F005B7E51 /* RealTimeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealTimeViewController.swift; sourceTree = "<group>"; };
@@ -63,8 +69,11 @@
 		1C1C645B201E409F005B7E51 /* BitcoinArbitrageAnalysis */ = {
 			isa = PBXGroup;
 			children = (
-				1C4AC20B201E51AF0042EF41 /* HistoricalViewController.swift */,
 				1C1C645C201E409F005B7E51 /* AppDelegate.swift */,
+				1C4AC20B201E51AF0042EF41 /* HistoricalViewController.swift */,
+				1C0BE032202D40AF000FE65C /* Exchanges.swift */,
+				1C0BE02C202CBFE2000FE65C /* XAxisFormatter.swift */,
+				1C0BE030202D102D000FE65C /* HistoricalDataService.swift */,
 				1C1C645E201E409F005B7E51 /* RealTimeViewController.swift */,
 				1C1C6462201E409F005B7E51 /* Main.storyboard */,
 				1C1C6465201E409F005B7E51 /* Assets.xcassets */,
@@ -222,6 +231,9 @@
 			files = (
 				1C1C645D201E409F005B7E51 /* AppDelegate.swift in Sources */,
 				1C1C645F201E409F005B7E51 /* RealTimeViewController.swift in Sources */,
+				1C0BE031202D102D000FE65C /* HistoricalDataService.swift in Sources */,
+				1C0BE02D202CBFE2000FE65C /* XAxisFormatter.swift in Sources */,
+				1C0BE033202D40AF000FE65C /* Exchanges.swift in Sources */,
 				1C4AC20C201E51AF0042EF41 /* HistoricalViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
