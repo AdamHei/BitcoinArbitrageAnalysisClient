@@ -20,19 +20,23 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
     @IBOutlet weak var exchange1TextField: UITextField!
     @IBOutlet weak var exchange2TextField: UITextField!
     @IBOutlet weak var intervalTextField: UITextField!
-    @IBOutlet weak var indexSwitch: UISwitch!
+    
+    @IBOutlet weak var deltaLabel: UILabel!
+    @IBOutlet weak var timeLabel: UILabel!
+    @IBOutlet weak var exchange1PriceLabel: UILabel!
+    @IBOutlet weak var exchange2PriceLabel: UILabel!
+    @IBOutlet weak var exchange1Label: UILabel!
+    @IBOutlet weak var exchange2Label: UILabel!
     
     @IBOutlet weak var historicalLineChart: LineChartView!
-    @IBOutlet weak var selectedValueLabel: UILabel!
     
     let historicalDataService = HistoricalDataService()
     
-    var exchange1 = GDAX
-    var exchange2 = BITFINEX
+    var exchange1 = INDEX
+    var exchange2 = GDAX
     var interval = "YEAR"
-    var withIndex = false
     
-    let exchanges = [GDAX, BITFINEX, KRAKEN, GEMINI]
+    let exchanges = [INDEX, GDAX, BITFINEX, KRAKEN, GEMINI]
     
     let intervals:[(interval: String, displayInterval: String)] = [("TWOYEAR", "Two Years"),
                                                                    ("YEAR", "One Year"),
@@ -80,17 +84,17 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
         historicalLineChart.xAxis.setLabelCount(2, force: false)
         historicalLineChart.xAxis.avoidFirstLastClippingEnabled = true
         historicalLineChart.xAxis.labelPosition = XAxis.LabelPosition.bottom
-        
-//        historicalLineChart.data = LineChartData()
-        historicalLineChart.data?.setDrawValues(false)
     }
     
     func didReceiveDataPoints(_ datapoints: [DataPoint], _ exchange: Exchange) {
+        // Cannot update a view from a background thread
         DispatchQueue.main.async {
             self.addNewDataPointsToChart(Datapoints: datapoints, Exchange: exchange)
         }
     }
     
+    // Possible issue: Server requests arrive in order of Exchange 2 then Exchange 1
+    // 
     func addNewDataPointsToChart(Datapoints datapoints: [DataPoint], Exchange exchange: Exchange) {
         // Data points are returned descending from the server
         let dataPointsAscending = datapoints.reversed()
@@ -105,25 +109,89 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
         let historicalDataSet = LineChartDataSet(values: historicalDataPoints, label: exchange.displayName)
         historicalDataSet.colors = [exchange.color]
         historicalDataSet.drawCirclesEnabled = false
+        historicalDataSet.label = exchange.displayName
         
         var historicalData: LineChartData
         if (historicalLineChart.data != nil) {
             historicalData = historicalLineChart.data! as! LineChartData
+            
+            if exchange == exchange1 && historicalData.dataSetCount > 0 {
+                // There's already a dataset in the chart, and
+                // we need to insert in front of it to maintain exchange1 before exchange2 ordering
+                let exchange2DataSet = historicalData.getDataSetByIndex(0)
+                historicalData.removeDataSetByIndex(0)
+                historicalData.addDataSet(historicalDataSet)
+                historicalData.addDataSet(exchange2DataSet)
+            } else {
+                historicalData.addDataSet(historicalDataSet)
+            }
         } else {
             historicalData = LineChartData()
+            historicalData.addDataSet(historicalDataSet)
         }
-        historicalData.addDataSet(historicalDataSet)
         
         historicalLineChart.data = historicalData
+        historicalLineChart.data?.setDrawValues(false)
         historicalLineChart.notifyDataSetChanged()
         
         historicalLineChart.chartDescription?.text = ""
     }
-    
+
+    // Update arbitrage related labels when user selects a point on the chart
     func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
-        selectedValueLabel.text = String(format: "%f", entry.y)
+        if historicalLineChart.data!.dataSetCount < 2 {
+            print("There are fewer than two data sets in the chart => No useful arbitrage data")
+            return
+        }
+        
+        // The data set the user just so happened to tap on
+        // Depends on whether the user tapped above or below the lines, which they aren't aware of
+        let dataSetIndex = highlight.dataSetIndex
+        
+        let timestamp = entry.x
+        var exchange1Val = 0.0, exchange2Val = 0.0
+        let isExchange1 = dataSetIndex == 0
+        
+        var complementDataSet: ChartDataSet
+        if isExchange1 {
+            exchange1Val = entry.y
+            complementDataSet = historicalLineChart.data!.getDataSetByIndex(1) as! ChartDataSet
+            
+            // Find the corresponding point at the same timestamp or closest to
+            // Ideally, the server has given us well-aligned data so we don't need to search beyond the x-value
+            if let entry = complementDataSet.entryForXValue(timestamp, closestToY: exchange1Val) {
+                exchange2Val = entry.y
+            }
+        } else {
+            exchange2Val = entry.y
+            complementDataSet = historicalLineChart.data!.getDataSetByIndex(0) as! ChartDataSet
+            
+            // See above comment
+            if let entry = complementDataSet.entryForXValue(timestamp, closestToY: exchange2Val) {
+                exchange1Val = entry.y
+            }
+        }
+        
+        timeLabel.text = XAxisFormatter().stringForValue(timestamp, axis: nil)
+        if exchange1Val != 0.0 && exchange2Val != 0.0 {
+            // We have useful data to display
+            let delta = abs(exchange1Val - exchange2Val)
+            deltaLabel.text = String(format: "$%.2f", delta)
+            exchange1PriceLabel.text = String(format: "$%.2f", exchange1Val)
+            exchange2PriceLabel.text = String(format: "$%.2f", exchange2Val)
+        } else if exchange1Val != 0 {
+            exchange1PriceLabel.text = String(format: "$%.2f", exchange1Val)
+            exchange2PriceLabel.text = "N/A"
+            deltaLabel.text = "N/A"
+        } else {
+            exchange2PriceLabel.text = String(format: "$%.2f", exchange2Val)
+            exchange1PriceLabel.text = "N/A"
+            deltaLabel.text = "N/A"
+        }
     }
 
+    // Only one column in each pickerview
+    // Could condense all pickerviews into one 3-column view to save space
     func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
@@ -152,16 +220,19 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
         return ""
     }
     
+    // Update labels and exchange/interval related vars when user selects an option
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
         if let tag = PickerViewTag(rawValue: pickerView.tag) {
             switch tag {
             case PickerViewTag.Exchange1:
-                exchange1TextField.text = exchanges[row].displayName
                 exchange1 = exchanges[row]
+                exchange1TextField.text = exchange1.displayName
+                exchange1Label.text = "\(exchange1.displayName):"
                 print("Exchange 1 is now \(exchange1)")
             case PickerViewTag.Exchange2:
-                exchange2TextField.text = exchanges[row].displayName
                 exchange2 = exchanges[row]
+                exchange2TextField.text = exchange2.displayName
+                exchange2Label.text = "\(exchange2.displayName):"
                 print("Exchange 2 is now \(exchange2)")
             case PickerViewTag.Interval:
                 intervalTextField.text = intervals[row].displayInterval
@@ -171,17 +242,23 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
         }
     }
     
+    // Clear old data and fetch new exchange data
     @IBAction func didTapFetchButton(_ sender: UIButton) {
         historicalLineChart.clear()
         historicalDataService.loadHistoricalData(Exchange: exchange1, Interval: interval)
         historicalDataService.loadHistoricalData(Exchange: exchange2, Interval: interval)
     }
 
-    // Clear the line chart data
+    // Clear the line chart data and the arbitrage related labels
     @IBAction func didTapClearButton(_ sender: UIButton) {
         historicalLineChart.clear()
+        exchange1PriceLabel.text = ""
+        exchange2PriceLabel.text = ""
+        deltaLabel.text = ""
+        timeLabel.text = ""
     }
     
+    // Dismiss the pickerview when tapped outside
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         view.endEditing(true)
     }
