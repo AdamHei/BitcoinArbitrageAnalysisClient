@@ -20,6 +20,7 @@ let BITFINEX = Exchange(name: "bitfinex", displayName: "Bitfinex", color: UIColo
 let KRAKEN = Exchange(name: "kraken", displayName: "Kraken", color: UIColor.cyan)
 let GEMINI = Exchange(name: "gemini", displayName: "Gemini", color: UIColor.green)
 let INDEX = Exchange(name: "index", displayName: "Index", color: UIColor.purple)
+let BINANCE = Exchange(name: "binance", displayName: "Binance", color: UIColor.orange)
 
 extension Exchange: Equatable {
     static func ==(lhs: Exchange, rhs: Exchange) -> Bool {

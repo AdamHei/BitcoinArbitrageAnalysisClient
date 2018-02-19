@@ -19,6 +19,13 @@ class XAxisFormatter: IAxisValueFormatter {
         dateFormatter.locale = NSLocale.current
         dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
         
-        return dateFormatter.string(from: date)
+        if let xAxis = axis {
+            let entries = xAxis.entries
+            if value == entries[0] || value == entries[entries.count - 1] {
+                return dateFormatter.string(from: date)
+            }
+        }
+        
+        return ""
     }
 }

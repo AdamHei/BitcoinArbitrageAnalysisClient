@@ -8,11 +8,16 @@
 
 import UIKit
 
-class FirstViewController: UIViewController {
+class RealTimeViewController: UIViewController, RealTimeServiceDelegate {
 
+    let realTimeDataService = RealTimeDataService()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
+        
+        realTimeDataService.delegate = self
+        realTimeDataService.fetchAllSpreadData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -20,6 +25,9 @@ class FirstViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
 
-
+    func didReceiveTickers(_ tickers: [Ticker]) {
+        for ticker in tickers {
+            print(ticker.exchange)
+        }
+    }
 }
-

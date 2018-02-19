@@ -10,16 +10,16 @@ import Foundation
 
 struct DataPoint: Decodable {
     var timestamp: Int
-    var price: String?
+    var price: String
 }
 
-protocol DataServiceDelegate: class {
+protocol HistoricalServiceDelegate: class {
     func didReceiveDataPoints(_ datapoints: [DataPoint], _ exchange: Exchange)
     // TODO Add error handling function
 }
 
 class HistoricalDataService {
-    weak var delegate: DataServiceDelegate?
+    weak var delegate: HistoricalServiceDelegate?
     
     private let serverIP = "104.236.221.68"
     private let tempurl = "http://104.236.221.68/historical/%@/%@"

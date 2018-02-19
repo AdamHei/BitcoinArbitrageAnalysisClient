@@ -9,7 +9,7 @@
 import UIKit
 import Charts
 
-class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, ChartViewDelegate, DataServiceDelegate {
+class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPickerViewDataSource, ChartViewDelegate, HistoricalServiceDelegate {
 
     enum PickerViewTag: Int {
         case Exchange1
@@ -32,11 +32,14 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
     
     let historicalDataService = HistoricalDataService()
     
+    // For the Delta timestamp
+    let dateFormatter = DateFormatter()
+    
     var exchange1 = INDEX
     var exchange2 = GDAX
     var interval = "YEAR"
     
-    let exchanges = [INDEX, GDAX, BITFINEX, KRAKEN, GEMINI]
+    let exchanges = [INDEX, BINANCE, GDAX, BITFINEX, KRAKEN, GEMINI]
     
     let intervals:[(interval: String, displayInterval: String)] = [("TWOYEAR", "Two Years"),
                                                                    ("YEAR", "One Year"),
@@ -69,6 +72,10 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
         exchange2TextField.inputView = exchange2PickerView
         intervalTextField.inputView = intervalPickerView
         
+        dateFormatter.timeZone = TimeZone.current
+        dateFormatter.locale = NSLocale.current
+        dateFormatter.dateFormat = "yyyy-MM-dd HH:mm"
+        
         historicalLineChart.delegate = self
         historicalDataService.delegate = self
         initChart()
@@ -81,7 +88,7 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
     
     func initChart() {
         historicalLineChart.xAxis.valueFormatter = XAxisFormatter()
-        historicalLineChart.xAxis.setLabelCount(2, force: false)
+        historicalLineChart.xAxis.setLabelCount(3, force: true)
         historicalLineChart.xAxis.avoidFirstLastClippingEnabled = true
         historicalLineChart.xAxis.labelPosition = XAxis.LabelPosition.bottom
     }
@@ -103,7 +110,7 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
         
         // Map server response to array of DataPoints
         let historicalDataPoints = dataPointsAscending.map { (datapoint) -> ChartDataEntry in
-            return ChartDataEntry(x: Double(datapoint.timestamp), y: Double(datapoint.price!)!)
+            return ChartDataEntry(x: Double(datapoint.timestamp), y: Double(datapoint.price)!)
         }
         
         let historicalDataSet = LineChartDataSet(values: historicalDataPoints, label: exchange.displayName)
@@ -172,7 +179,9 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
             }
         }
         
-        timeLabel.text = XAxisFormatter().stringForValue(timestamp, axis: nil)
+        let date = Date(timeIntervalSince1970: timestamp)
+        timeLabel.text = dateFormatter.string(from: date)
+        
         if exchange1Val != 0.0 && exchange2Val != 0.0 {
             // We have useful data to display
             let delta = abs(exchange1Val - exchange2Val)
