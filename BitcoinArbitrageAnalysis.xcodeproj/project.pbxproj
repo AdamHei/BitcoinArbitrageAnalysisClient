@@ -17,6 +17,7 @@
 		1C1C6469201E409F005B7E51 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 1C1C6467201E409F005B7E51 /* LaunchScreen.storyboard */; };
 		1C4AC20C201E51AF0042EF41 /* HistoricalViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1C4AC20B201E51AF0042EF41 /* HistoricalViewController.swift */; };
 		1CCE51B8203A4EAB005D8DBE /* RealTimeDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CCE51B7203A4EAB005D8DBE /* RealTimeDataService.swift */; };
+		1CFB3682206047DB006D2709 /* ArbitrageView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1CFB3681206047DB006D2709 /* ArbitrageView.swift */; };
 		D98E7ED3E3DA6D350A8A02C8 /* Pods_BitcoinArbitrageAnalysis.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 09C8EE20AB569C1D21346D87 /* Pods_BitcoinArbitrageAnalysis.framework */; };
 /* End PBXBuildFile section */
 
@@ -34,6 +35,7 @@
 		1C1C646A201E409F005B7E51 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		1C4AC20B201E51AF0042EF41 /* HistoricalViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HistoricalViewController.swift; sourceTree = "<group>"; };
 		1CCE51B7203A4EAB005D8DBE /* RealTimeDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RealTimeDataService.swift; sourceTree = "<group>"; };
+		1CFB3681206047DB006D2709 /* ArbitrageView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArbitrageView.swift; sourceTree = "<group>"; };
 		3161B7346FCB8808092356DC /* Pods-BitcoinArbitrageAnalysis.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitcoinArbitrageAnalysis.debug.xcconfig"; path = "Pods/Target Support Files/Pods-BitcoinArbitrageAnalysis/Pods-BitcoinArbitrageAnalysis.debug.xcconfig"; sourceTree = "<group>"; };
 		374E4CEDEBE0AE78A2DFADA9 /* Pods-BitcoinArbitrageAnalysis.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-BitcoinArbitrageAnalysis.release.xcconfig"; path = "Pods/Target Support Files/Pods-BitcoinArbitrageAnalysis/Pods-BitcoinArbitrageAnalysis.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -73,10 +75,9 @@
 			children = (
 				1C1C645C201E409F005B7E51 /* AppDelegate.swift */,
 				1C4AC20B201E51AF0042EF41 /* HistoricalViewController.swift */,
-				1C0BE032202D40AF000FE65C /* Exchanges.swift */,
 				1C0BE02C202CBFE2000FE65C /* XAxisFormatter.swift */,
-				1C0BE030202D102D000FE65C /* HistoricalDataService.swift */,
-				1CCE51B7203A4EAB005D8DBE /* RealTimeDataService.swift */,
+				1C80B63720421A030079F257 /* ArbitrageViews */,
+				1C80B63820421A180079F257 /* DataServices */,
 				1C1C645E201E409F005B7E51 /* RealTimeViewController.swift */,
 				1C1C6462201E409F005B7E51 /* Main.storyboard */,
 				1C1C6465201E409F005B7E51 /* Assets.xcassets */,
@@ -84,6 +85,24 @@
 				1C1C646A201E409F005B7E51 /* Info.plist */,
 			);
 			path = BitcoinArbitrageAnalysis;
+			sourceTree = "<group>";
+		};
+		1C80B63720421A030079F257 /* ArbitrageViews */ = {
+			isa = PBXGroup;
+			children = (
+				1CFB3681206047DB006D2709 /* ArbitrageView.swift */,
+			);
+			path = ArbitrageViews;
+			sourceTree = "<group>";
+		};
+		1C80B63820421A180079F257 /* DataServices */ = {
+			isa = PBXGroup;
+			children = (
+				1C0BE032202D40AF000FE65C /* Exchanges.swift */,
+				1C0BE030202D102D000FE65C /* HistoricalDataService.swift */,
+				1CCE51B7203A4EAB005D8DBE /* RealTimeDataService.swift */,
+			);
+			path = DataServices;
 			sourceTree = "<group>";
 		};
 		50AB9EFCFC618A27EE8C8DAD /* Pods */ = {
@@ -197,10 +216,14 @@
 			inputPaths = (
 				"${SRCROOT}/Pods/Target Support Files/Pods-BitcoinArbitrageAnalysis/Pods-BitcoinArbitrageAnalysis-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/Charts/Charts.framework",
+				"${BUILT_PRODUCTS_DIR}/Macaw/Macaw.framework",
+				"${BUILT_PRODUCTS_DIR}/SWXMLHash/SWXMLHash.framework",
 			);
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Charts.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Macaw.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SWXMLHash.framework",
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
@@ -237,6 +260,7 @@
 				1C0BE031202D102D000FE65C /* HistoricalDataService.swift in Sources */,
 				1C0BE02D202CBFE2000FE65C /* XAxisFormatter.swift in Sources */,
 				1CCE51B8203A4EAB005D8DBE /* RealTimeDataService.swift in Sources */,
+				1CFB3682206047DB006D2709 /* ArbitrageView.swift in Sources */,
 				1C0BE033202D40AF000FE65C /* Exchanges.swift in Sources */,
 				1C4AC20C201E51AF0042EF41 /* HistoricalViewController.swift in Sources */,
 			);

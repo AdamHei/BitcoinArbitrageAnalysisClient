@@ -1,5 +1,5 @@
 # Uncomment the next line to define a global platform for your project
-# platform :ios, '9.0'
+platform :ios, '11.2'
 
 target 'BitcoinArbitrageAnalysis' do
   # Comment the next line if you're not using Swift and don't want to use dynamic frameworks
@@ -7,4 +7,6 @@ target 'BitcoinArbitrageAnalysis' do
 
   # Pods for BitcoinArbitrageAnalysis
   pod 'Charts'
+  
+  pod "Macaw", "0.9.1"
 end

@@ -9,15 +9,16 @@
 import UIKit
 
 class RealTimeViewController: UIViewController, RealTimeServiceDelegate {
-
-    let realTimeDataService = RealTimeDataService()
     
+    @IBOutlet weak var arbitrageView: ArbitrageView!
+    
+    let realTimeDataService = RealTimeDataService()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
         realTimeDataService.delegate = self
-        realTimeDataService.fetchAllSpreadData()
     }
 
     override func didReceiveMemoryWarning() {
@@ -25,9 +26,17 @@ class RealTimeViewController: UIViewController, RealTimeServiceDelegate {
         // Dispose of any resources that can be recreated.
     }
 
+    @IBAction func didTapFetchButton(_ sender: UIButton) {
+        realTimeDataService.fetchWidestSpread()
+    }
+    
     func didReceiveTickers(_ tickers: [Ticker]) {
-        for ticker in tickers {
-            print(ticker.exchange)
+
+    }
+    
+    func didReceiveWidestSpread(_ spread: WidestSpread) {
+        DispatchQueue.main.async {
+            self.arbitrageView.displayOpportunity(spread)
         }
     }
 }

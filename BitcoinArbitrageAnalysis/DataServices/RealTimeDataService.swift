@@ -14,8 +14,17 @@ struct Ticker: Decodable {
     var ask: String
 }
 
+struct WidestSpread: Decodable {
+    var buyExchange: String
+    var buyPrice: String
+    var sellExchange: String
+    var sellPrice: String
+    var spread: String
+}
+
 protocol RealTimeServiceDelegate: class {
     func didReceiveTickers(_ tickers: [Ticker])
+    func didReceiveWidestSpread(_ spread: WidestSpread)
 }
 
 class RealTimeDataService {
@@ -26,7 +35,7 @@ class RealTimeDataService {
     private let session: URLSession = .shared
     private let decoder = JSONDecoder()
     
-    func fetchAllSpreadData() {
+    func fetchAllSpreads() {
         let task = session.dataTask(with: allSpreadUrl) { (data, response, error) in
             if error != nil {
                 print("Could not retrieve all spread data")
@@ -38,6 +47,24 @@ class RealTimeDataService {
                 self.delegate?.didReceiveTickers(tickers)
             } catch let error {
                 print("Could not decode Tickers")
+                print(error)
+            }
+        }
+        task.resume()
+    }
+    
+    func fetchWidestSpread() {
+        let task = session.dataTask(with: widestSpreadUrl) { (data, response, error) in
+            if error != nil {
+                print("Could not retrieve widest spread")
+                print(error!)
+                return
+            }
+            do {
+                let spread = try self.decoder.decode(WidestSpread.self, from: data!)
+                self.delegate?.didReceiveWidestSpread(spread)
+            } catch let error {
+                print("Could not decode widest spread data")
                 print(error)
             }
         }
