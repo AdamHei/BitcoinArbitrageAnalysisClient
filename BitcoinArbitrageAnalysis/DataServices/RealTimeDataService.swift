@@ -14,12 +14,36 @@ struct Ticker: Decodable {
     var ask: String
 }
 
+//{
+//    "btcQuantity": "0.002059",
+//    "buyExchange": "Bitfinex",
+//    "buyPrice": "8051.9",
+//    "buyQuantity": "36.32705524",
+//    "buyTakerFee": "0.2",
+//    "buyWithdrawalFee": "0.0004",
+//    "hasWithdrawalFee": true,
+//    "profit": "-3.26",
+//    "sellExchange": "Binance",
+//    "sellPrice": "8056.01",
+//    "sellQuantity": "0.00205900",
+//    "sellTakerFee": "0.1"
+//}
+
 struct WidestSpread: Decodable {
     var buyExchange: String
     var buyPrice: String
+    var buyQuantity: String
+    var buyTakerFee: String
+    var buyWithdrawalFee: String
+    
+    var profit: String
+    var btcQuantity: String
+    var hasWithdrawalFee: Bool
+    
     var sellExchange: String
     var sellPrice: String
-    var spread: String
+    var sellQuantity: String
+    var sellTakerFee: String
 }
 
 protocol RealTimeServiceDelegate: class {
