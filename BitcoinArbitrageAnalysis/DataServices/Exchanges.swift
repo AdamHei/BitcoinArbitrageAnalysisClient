@@ -18,9 +18,10 @@ struct Exchange {
 let GDAX = Exchange(name: "gdax", displayName: "GDAX", color: UIColor.blue)
 let BITFINEX = Exchange(name: "bitfinex", displayName: "Bitfinex", color: UIColor.red)
 let KRAKEN = Exchange(name: "kraken", displayName: "Kraken", color: UIColor.cyan)
-let GEMINI = Exchange(name: "gemini", displayName: "Gemini", color: UIColor.green)
+//let GEMINI = Exchange(name: "gemini", displayName: "Gemini", color: UIColor.green)
 let INDEX = Exchange(name: "index", displayName: "Index", color: UIColor.purple)
 let BINANCE = Exchange(name: "binance", displayName: "Binance", color: UIColor.orange)
+let BITSTAMP = Exchange(name: "bitstamp", displayName: "Bitstamp", color: UIColor.green)
 
 extension Exchange: Equatable {
     static func ==(lhs: Exchange, rhs: Exchange) -> Bool {

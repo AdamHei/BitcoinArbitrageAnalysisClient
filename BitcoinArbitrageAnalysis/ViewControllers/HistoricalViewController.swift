@@ -31,7 +31,9 @@ class HistoricalViewController: UIViewController, UIPickerViewDelegate, UIPicker
     var exchange2 = GDAX
     var interval = "YEAR"
     
-    let exchanges = [INDEX, BINANCE, GDAX, BITFINEX, KRAKEN, GEMINI]
+    let exchanges = [INDEX, BINANCE, BITSTAMP, GDAX, BITFINEX, KRAKEN,
+                     // GEMINI
+    ]
     
     let intervals:[(interval: String, displayInterval: String)] = [("TWOYEAR", "Two Years"),
                                                                    ("YEAR", "One Year"),
